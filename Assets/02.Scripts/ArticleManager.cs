@@ -30,8 +30,8 @@ public class ArticleManager : MonoBehaviour
         PlayerPrefs.SetInt("score", 100);
 
         Article article = new Article();
-        article.Name = "이성민";
-        article.Content = "네에~~";
+        article.Name = "aaaa";
+        article.Content = "네에";
 
         string jsonText = JsonUtility.ToJson(article);
         Debug.Log(jsonText);
@@ -101,8 +101,6 @@ public class ArticleManager : MonoBehaviour
 
         string txt = File.ReadAllText($"{path}/data.txt");
         _articles = JsonUtility.FromJson<ArticleData>(txt).Data;
-
-
 
 
 /*        string data = JsonUtility.ToJson(_articles);
