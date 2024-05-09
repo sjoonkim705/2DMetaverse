@@ -1,12 +1,19 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+public enum ShowListMode
+{
+    All,
+    Notice,
+    Pictures,
+    Videos,
+}
 public class UI_ArticleList : MonoBehaviour
 {
 
     public List<UI_Article> UIArticles;
     public GameObject EmptyObject;
+    public GameObject UI_ArticleWrite;
 
     private void Start()
     {
@@ -35,5 +42,25 @@ public class UI_ArticleList : MonoBehaviour
         }
 
     }
+    public void OnClickAllButton()
+    {
+        ArticleManager.Instance.FindAll();
+        Debug.Log("All");
+        Refresh();
+
+    }
+    public void OnClickNoticeButton()
+    {
+        ArticleManager.Instance.FindNotice();
+        Debug.Log("Notice");
+        Refresh();
+    }
+
+    public void OnClickWriteButton()
+    {
+        UI_ArticleWrite.gameObject.SetActive(true);
+    }
+
+
 
 }

@@ -9,6 +9,4 @@ public class Person
     public string Name;
     public int Age;
     public List<string> Hobby = new List<string>();
-
-
 }

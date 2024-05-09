@@ -1,3 +1,5 @@
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -18,15 +20,27 @@ public enum ArticleType
 [Serializable]
 public class Article // Quest, Item, Achievement
 {
-
+    [BsonId] 
+    public ObjectId Id;             // 유일한 주민번호: ID, _id, id (시간 + 기가ID + 프로세스ID + count)
     public ArticleType ArticleType; // 일반글? 공지사항글이냐?
+    [BsonElement("Name")]
     public string Name;             // 글쓴이
     public string Title;            // 글 제목
     public string Content;          // 글 내용
     public int Like;                // 좋아요 개수
     public DateTime WriteTime;      // 글 쓴 날짜/시간
 
+    public Article(string name, string content)
+    {
+        Name = name;
+        Content = content;
+        Like = 0;
+        WriteTime = DateTime.Now;
+        ArticleType = ArticleType.Normal;
+
+    }
 }
+
 
 [Serializable]
 public class ArticleData
