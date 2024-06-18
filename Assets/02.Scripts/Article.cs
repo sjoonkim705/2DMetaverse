@@ -18,6 +18,7 @@ public enum ArticleType
     Notice,
 }
 [Serializable]
+[BsonIgnoreExtraElements]
 public class Article // Quest, Item, Achievement
 {
     [BsonId] 
@@ -25,11 +26,20 @@ public class Article // Quest, Item, Achievement
     public ArticleType ArticleType; // 일반글? 공지사항글이냐?
     [BsonElement("Name")]
     public string Name;             // 글쓴이
-    public string Title;            // 글 제목
     public string Content;          // 글 내용
     public int Like;                // 좋아요 개수
     public DateTime WriteTime;      // 글 쓴 날짜/시간
+    [BsonDefaultValue("http://192.168.200.47:1043/empty.png")]
+    public string Profile { get; set; }
 
+    public Article()
+    {
+        Like = 0;
+        WriteTime = DateTime.Now;
+        ArticleType = ArticleType.Normal;
+        Profile = "http://192.168.200.47:1043/empty.png";
+    }
+    
     public Article(string name, string content)
     {
         Name = name;
@@ -37,7 +47,7 @@ public class Article // Quest, Item, Achievement
         Like = 0;
         WriteTime = DateTime.Now;
         ArticleType = ArticleType.Normal;
-
+        Profile = "http://192.168.200.47:1043/empty.png";
     }
 }
 

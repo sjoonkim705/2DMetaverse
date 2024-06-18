@@ -1,30 +1,73 @@
+using MongoDB.Bson;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
+using UnityEngine.Profiling;
 using UnityEngine.UI;
 
 public class UI_Article : MonoBehaviour
 {
     public Text NameTextUI;        // 글쓴이
-    //public Text TitleTextUI;      // 글 제목
     public Text ContentTextUI;    // 글 내용
     public Text LikeTextUI;       // 좋아요 개수
     public Text WriteTimeUI;      // 글 쓴 날짜/시간
+    public GameObject PrefMenuUI;
+    public RawImage ProfileRawImage;
+    private static Dictionary<string, Texture> _cache = new Dictionary<string, Texture>();
 
-    public void Init(Article article)
+    [HideInInspector]
+    public Article MyArticle;
+    private void Awake()
+    {
+        ProfileRawImage = GetComponentInChildren<RawImage>();
+ 
+    }
+    public void Init(in Article article)
     {
         NameTextUI.text = article.Name;
-        //TitleTextUI.text = article.Title;
         ContentTextUI.text = article.Content;
         LikeTextUI.text = $"좋아요 {article.Like}";
-        WriteTimeUI.text = GetTimeString(article.WriteTime);
-        //$"{article.WriteTime}";
+        WriteTimeUI.text = GetTimeString(article.WriteTime.ToLocalTime());
+        PrefMenuUI.SetActive(false);
+        MyArticle = article;
+  
+        StartCoroutine(GetTexture(article.Profile));
+        
+    }
+    IEnumerator GetTexture(string profileUrl)
+    {
+        if (_cache.ContainsKey(profileUrl)) // 캐시된게 있을때 -> 캐시 히트
+        { 
+            ProfileRawImage.texture = _cache[profileUrl];
+            Debug.Log($"Cache Hit!");
+            yield break;
+        }
+            // Http 주문을 위해 주문서(Request)를 만든다.
+            // -> 주문서 내용: URL로부터 텍스처(image)를 다운로드하기위한 Get request 요청
+
+            UnityWebRequest www = UnityWebRequestTexture.GetTexture(profileUrl);
+        yield return www.SendWebRequest(); // 비동기
+
+        if (www.isNetworkError || www.isHttpError)
+        {
+            Debug.Log(www.error);
+        }
+        else
+        {
+            Texture myTexture = ((DownloadHandlerTexture)www.downloadHandler).texture;
+
+
+            ProfileRawImage.texture = myTexture;
+            Debug.Log($"Cache Miss");
+            _cache[profileUrl] = myTexture;
+
+        }
     }
     private string GetTimeString(DateTime dateTime)
     {
         TimeSpan timeSpan = DateTime.Now - dateTime;
-        //Debug.Log(timeSpan.ToString("mm"));
         if (dateTime == null)
         {
             return "null";
@@ -56,5 +99,23 @@ public class UI_Article : MonoBehaviour
                 return dateTime.ToString();
             }
         }
+    }
+    public void OnMenuButtonClicked()
+    {
+        if (PrefMenuUI.activeInHierarchy)
+        {
+            PrefMenuUI.SetActive(false);
+        }
+        else
+        {
+            PrefMenuUI.SetActive(true);
+        }
+    }
+    public void OnLikeButtonClicked()
+    {
+        ArticleManager.Instance.AddLike(MyArticle);
+        ArticleManager.Instance.FindAll();
+        ArticleManager.Instance.UI_ArticleList.Refresh();
+
     }
 }

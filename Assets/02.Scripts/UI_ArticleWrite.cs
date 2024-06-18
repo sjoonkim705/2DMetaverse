@@ -7,31 +7,34 @@ using UnityEngine.UI;
 public class UI_ArticleWrite : MonoBehaviour
 {
     [HideInInspector]
-    public InputField MyTextField;
+    public InputField MyInputFieldUI;
     [HideInInspector]
-    public Toggle NoticeToggle;
+    public Toggle NoticeToggleUI; //
     
     private void Awake()
     {
-        MyTextField = GetComponentInChildren<InputField>();
-        NoticeToggle = GetComponentInChildren<Toggle>();
+        MyInputFieldUI = GetComponentInChildren<InputField>();
+        NoticeToggleUI = GetComponentInChildren<Toggle>();
+
     }
+    private void Start()
+    {
+        this.gameObject.SetActive(false);
+    }
+
+
     public void OnCloseButtonClicked()
     {
+        FindObjectOfType<UI_ArticleWrite>().gameObject.SetActive(true);
         this.gameObject.SetActive(false);
     }
 
     public void OnSubmitButtonClicked()
     {
-        string name = "김성준";
-        string content = MyTextField.text;
+        ArticleType articleType = NoticeToggleUI.isOn ? ArticleType.Notice : ArticleType.Normal;
+        string content = MyInputFieldUI.text;
 
-        Article newArticle = new Article(name, content);
-        if (NoticeToggle.isOn)
-        {
-            newArticle.ArticleType = ArticleType.Notice;
-        }
-        ArticleManager.Instance.Articles.Add(newArticle);
+        ArticleManager.Instance.Write(articleType, content);
         ArticleManager.Instance.UI_ArticleList.Refresh();
 
         this.gameObject.SetActive(false);

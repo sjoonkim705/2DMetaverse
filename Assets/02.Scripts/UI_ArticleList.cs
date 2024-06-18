@@ -14,6 +14,9 @@ public class UI_ArticleList : MonoBehaviour
     public List<UI_Article> UIArticles;
     public GameObject EmptyObject;
     public GameObject UI_ArticleWrite;
+    public GameObject ArticleView;
+    public GameObject MapView;
+
 
     private void Start()
     {
@@ -44,6 +47,7 @@ public class UI_ArticleList : MonoBehaviour
     }
     public void OnClickAllButton()
     {
+        ArticleView.SetActive(true);
         ArticleManager.Instance.FindAll();
         Debug.Log("All");
         Refresh();
@@ -51,14 +55,22 @@ public class UI_ArticleList : MonoBehaviour
     }
     public void OnClickNoticeButton()
     {
+        ArticleView.SetActive(true);
         ArticleManager.Instance.FindNotice();
         Debug.Log("Notice");
         Refresh();
     }
+    public void OnClickMapView()
+    {
+        ArticleView.SetActive(false);
+        MapView.SetActive(true);
+    }
 
     public void OnClickWriteButton()
     {
+
         UI_ArticleWrite.gameObject.SetActive(true);
+        //gameObject.SetActive(false);
     }
 
 

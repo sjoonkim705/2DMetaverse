@@ -1,11 +1,9 @@
 using MongoDB.Bson;
 using MongoDB.Driver;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.IO;
+
 using UnityEngine;
-using static UnityEngine.ParticleSystem;
 
 public class ArticleManager : MonoBehaviour
 {
@@ -57,6 +55,7 @@ public class ArticleManager : MonoBehaviour
         // -1 -> 내림차순 정렬 -> 높은 값에서 낮은 값으로 정렬한다.
         _articles = _articleCollection.Find(new BsonDocument()).Sort(sort).ToList();
 
+
 /*        // var dataList = _articleCollection.Sort(new BsonDocument("WriteTime")).ToList();
         _articles.Clear();
 
@@ -80,6 +79,37 @@ public class ArticleManager : MonoBehaviour
 
         _articles = _articleCollection.Find(data => (int)data.ArticleType == (int)ArticleType.Notice).ToList();
 
+    }
+    public void Write(ArticleType articleType, string content)
+    {
+        Article article = new Article()
+        {
+            ArticleType = articleType,
+            Name = "김성준",
+            Content = content,
+            Like = 0,
+            WriteTime = DateTime.Now,
+        };
+        _articleCollection.InsertOne(article);
+
+    }
+    public void Modify(Article targetArticle, string content, bool isNotice)
+    {
+        var contentUpdate = Builders<Article>.Update.Set("Content", content);
+        var typeUpdate = Builders<Article>.Update.Set("ArticleType", isNotice ? ArticleType.Notice : ArticleType.Normal);
+        UpdateResult result = _articleCollection.UpdateOne(data => data.Id == targetArticle.Id, contentUpdate);
+        _articleCollection.UpdateOne(data => data.Id == targetArticle.Id, typeUpdate);
+    }
+    public void Delete(Article article)
+    {
+        var filter = Builders<Article>.Filter.Eq("_id", article.Id);
+        var result = _articleCollection.DeleteOne(d=> d.Id == article.Id);
+
+    }
+    public void AddLike(Article article)
+    {
+        var updateDefinition = Builders<Article>.Update.Inc("Like", 1); //DB에 있는 정보보다 1증가
+        UpdateResult result = _articleCollection.UpdateOne(data => data.Id == article.Id, updateDefinition);
     }
 }
 
